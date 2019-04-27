@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/home")
+@RequestMapping("/api/home")
 public class LoginController {
     @Resource
     private UserServiceIpml userServiceIpml;
@@ -35,7 +35,7 @@ public class LoginController {
         }else {
             list.add("normal");
         }
-        user.setAuthList(list);
+        user.setAuthority(list);
         return new JsonResult(user);
     }
 

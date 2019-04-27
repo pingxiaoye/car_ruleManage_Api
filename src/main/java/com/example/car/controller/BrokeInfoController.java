@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 
 
 @RestController
-@RequestMapping("/brokeInfo")
+@RequestMapping("/api/brokeInfo")
 public class BrokeInfoController {
 
     @Resource
