@@ -215,12 +215,22 @@
     SELECT count(*)
     FROM
     user u
+    where 1=1
+    <if test="userEntity.name != null">
+      and name like "%"#{userEntity.name,jdbcType=VARCHAR}"%"
+    </if>
+    <if test="userEntity.userName != null">
+      and userName = #{userEntity.userName,jdbcType=VARCHAR}
+    </if>
+    <if test="userEntity.driverCardNumber != null">
+      and driverCardNumber = #{userEntity.driverCardNumber,jdbcType=VARCHAR}
+    </if>
   </select>
   <select id="getUserList" resultType="com.example.car.entity.UserEntity">
     select * FROM user u
     where 1=1
     <if test="userEntity.name != null">
-      and name like "%"||#{userEntity.name,jdbcType=VARCHAR}||"%"
+      and name like "%"#{userEntity.name,jdbcType=VARCHAR}"%"
     </if>
     <if test="userEntity.userName != null">
       and userName = #{userEntity.userName,jdbcType=VARCHAR}
@@ -231,6 +241,9 @@
     ORDER BY
     u.id DESC
     <include refid="limit"/>
+  </select>
+  <select id="getUserListByName" resultType="com.example.car.entity.UserEntity">
+    select * from user where name like "%"#{name}"%"
   </select>
   <sql id="limit">
         limit #{pageObject.startIndex}, #{pageObject.pageSize}

@@ -56,9 +56,13 @@ public interface BrokeInfoMapper {
      */
     int updateByPrimaryKey(BrokeInfoEntity record);
 
-    int getListCount();
+    int getListCount(@Param("brokeInfoEntity") BrokeInfoEntity brokeInfoEntity);
 
     List<BrokeInfoEntity> getList(@Param("pageObject")PageObject pageObject, @Param("brokeInfoEntity") BrokeInfoEntity brokeInfoEntity);
 
     List<String> getBrokeImgList(Integer brokeInfoId);
+
+    int insertImg( @Param("imgList")List<String> imgList,@Param("brokeInfoId") Integer brokeInfoId);
+
+    void delImgs(Integer id);
 }

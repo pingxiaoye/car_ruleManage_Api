@@ -14,7 +14,7 @@ public class BrokeInfoServiceImpl {
     private BrokeInfoMapper brokeInfoMapper;
 
     public PageResult<BrokeInfoEntity> getList(BrokeInfoEntity brokeInfoEntity) {
-        int rowCount = brokeInfoMapper.getListCount();
+        int rowCount = brokeInfoMapper.getListCount(brokeInfoEntity);
         PageResult<BrokeInfoEntity> pageResult = new PageResult<>(brokeInfoEntity.getCurrent(), brokeInfoEntity.getSize(), rowCount);
         if (pageResult.willCauseEmptyList()) {
             return pageResult;

@@ -1,6 +1,13 @@
 package com.example.car.mapper;
 
+import com.example.car.common.PageObject;
+import com.example.car.common.PageResult;
 import com.example.car.entity.CarEntity;
+import com.example.car.entity.RepairInfo;
+import com.example.car.entity.UserEntity;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface CarMapper {
     /**
@@ -50,4 +57,18 @@ public interface CarMapper {
      * @mbg.generated
      */
     int updateByPrimaryKey(CarEntity record);
+
+    int getListCount(@Param("carEntity") CarEntity carEntity);
+
+    List<CarEntity> getList(@Param("pageObject")PageObject pageObject,@Param("carEntity") CarEntity carEntity);
+
+    List<String> getImgList(Integer id);
+
+    int insertRepairInfo(RepairInfo repairInfo);
+
+    int getRepairInfoListCount(@Param("carId") Integer carId);
+
+    List<RepairInfo> getRepairInfoList(@Param("pageObject")PageObject pageObject,@Param("carId")Integer carId);
+
+    int insertImg(@Param("imgList")List<String> imgList,@Param("carId") Integer carId);
 }

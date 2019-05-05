@@ -3,6 +3,7 @@ package com.example.car.mapper;
 import com.example.car.common.PageObject;
 import com.example.car.common.PageResult;
 import com.example.car.entity.UserEntity;
+import org.apache.catalina.User;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -58,7 +59,9 @@ public interface UserMapper {
 
     UserEntity getUserByUserName(String userName);
 
-    int getUserListCount();
+    int getUserListCount(@Param("userEntity") UserEntity userEntity);
 
     List<UserEntity> getUserList(@Param("pageObject") PageObject pageObject,@Param("userEntity") UserEntity userEntity);
+
+    List<UserEntity> getUserListByName(@Param("name") String name);
 }

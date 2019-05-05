@@ -8,6 +8,7 @@ import com.example.car.entity.UserEntity;
 import com.example.car.mapper.BrokeInfoMapper;
 import com.example.car.mapper.UserMapper;
 import com.example.car.service.BrokeInfoServiceImpl;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +30,7 @@ public class BrokeInfoController {
     private UserMapper userMapper;
 
     @RequestMapping("/add")
+    @Transactional
     public JsonResult add(@RequestBody BrokeInfoEntity brokeInfoEntity){
         try {
             if (brokeInfoEntity.getUserId()!=null){
@@ -40,6 +42,10 @@ public class BrokeInfoController {
             }
             //插入违章记录
             brokeInfoMapper.insert(brokeInfoEntity);
+            Integer bId = brokeInfoEntity.getId();
+            if (brokeInfoEntity.getImgList()!=null){
+                brokeInfoMapper.insertImg(brokeInfoEntity.getImgList(),bId);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServiceException("添加失败");
@@ -57,6 +63,12 @@ public class BrokeInfoController {
     public JsonResult update(@RequestBody BrokeInfoEntity brokeInfoEntity){
         try {
             brokeInfoMapper.updateByPrimaryKeySelective(brokeInfoEntity);
+            if(brokeInfoEntity.getImgList()!=null){
+                //先删除之前的图片
+                brokeInfoMapper.delImgs(brokeInfoEntity.getId());
+                //再重新插入图片
+                brokeInfoMapper.insertImg(brokeInfoEntity.getImgList(),brokeInfoEntity.getId());
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServiceException("更新失败");

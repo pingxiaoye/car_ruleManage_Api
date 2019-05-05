@@ -29,7 +29,7 @@ public class UserServiceIpml {
 
 
     public PageResult<UserEntity> getUserList(UserEntity userEntity) {
-        int rowCount = userMapper.getUserListCount();
+        int rowCount = userMapper.getUserListCount(userEntity);
         PageResult<UserEntity> pageResult = new PageResult<>(userEntity.getCurrent(), userEntity.getSize(), rowCount);
         if (pageResult.willCauseEmptyList()) {
             return pageResult;

@@ -1,5 +1,6 @@
 package com.example.car.common;
 
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
+import java.io.IOException;
 
 /**
  * @author Kartist 2018/8/15 10:50
@@ -18,67 +20,25 @@ import javax.validation.ConstraintViolationException;
 public class ControllerExceptionHandler {
 
     /**
-     * 当spring发现系统出现异常了,且异常的
-     * 类型为ServiceException类型,此时就会
-     * 回调此方法,并将异常值传递给这个方法,
-     * 这时我们就可以在此方法中对业务异常进行
-     * 统一处理,例如封装到jsonResult,然后
-     * 写到客户端告诉用户.
+     * 全局异常处理
+     *
+     * @param e
+     * @param request
+     * @param response
+     * @throws IOException
      */
-    @ExceptionHandler({ServiceException.class})
-    public Object handleServiceException(ServiceException e, HttpServletRequest request, HttpServletResponse response) {
-        log.error(e.getCauseStr(), e.getCauseObj());
-        if (e.getErrorCode() == null) {
-            return handResult(request, response, e.getMessage());
-        }
-        return handResult(request, response, e.getMessage(), e.getErrorCode());
-    }
-
-    @ExceptionHandler({ControllerException.class})
-    public Object handleControllerException(ControllerException e, HttpServletRequest request, HttpServletResponse response) {
-        return handResult(request, response, e.getMessage(), e.getErrorCode());
+    @ExceptionHandler(Exception.class)
+    public void handleViolationException(Exception e, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        final String requestURI = request.getRequestURI();
+        log.error("uri : {} ,handle exception : ", requestURI, e);
+            responseWithJson(response, new JsonResult("Fail", e.getMessage()));
 
     }
 
-    @ExceptionHandler({ConstraintViolationException.class})
-    public Object handleConstraintViolationException(ConstraintViolationException e, HttpServletRequest request, HttpServletResponse response) {
-        String message = e.getMessage();
-        log.error(message);
-        return handResult(request, response, message);
-    }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class})
-    public Object handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request, HttpServletResponse response) {
-        String message = e.getMessage();
-        log.error(message);
-        return handResult(request, response, message);
+    private void responseWithJson(HttpServletResponse response, JsonResult jsonResult) throws IOException {
+        response.setHeader("Content-Type", "application/json;charset=utf-8");
+        response.getWriter().write(JSON.toJSONString(jsonResult));
     }
-
-    @ExceptionHandler(BindException.class)
-    public Object handleServiceException(BindException e, HttpServletRequest request, HttpServletResponse response) {
-        StringBuilder builder = new StringBuilder();
-        e.getFieldErrors().forEach((fieldError -> builder.append(fieldError.getField()).append(fieldError.getDefaultMessage()).append(",")));
-        String message = builder.toString();
-        return handResult(request, response, message);
-    }
-
-    @ExceptionHandler(value = Exception.class)
-    public Object allExceptionHandler(Exception exception, HttpServletRequest request, HttpServletResponse response) {
-        log.error("error :", exception);
-        String message = exception.getMessage();
-        return handResult(request, response, message);
-    }
-
-    private Object handResult(HttpServletRequest request, HttpServletResponse response, String message) {
-        return handResult(request, response, message, JsonResult.ERROR);
-    }
-
-    private Object handResult(HttpServletRequest request, HttpServletResponse response, String message, String state) {
-            JsonResult jsonResult = new JsonResult();
-            jsonResult.setMessage(message);
-            jsonResult.setState(state);
-            return jsonResult;
-    }
-
 
 }

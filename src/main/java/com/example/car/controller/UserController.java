@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -61,6 +62,12 @@ public class UserController {
     public JsonResult getUserList(@RequestBody UserEntity userEntity){
         PageResult<UserEntity> pageResult = userServiceIpml.getUserList(userEntity);
         return new JsonResult(pageResult);
+    }
+
+    @RequestMapping("/getListByName")
+    public JsonResult getListByName(@RequestParam String name){
+        List<UserEntity> list = userMapper.getUserListByName(name);
+        return new JsonResult(list);
     }
 
 }
