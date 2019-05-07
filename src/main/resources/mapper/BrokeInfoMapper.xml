@@ -185,6 +185,9 @@
       <if test="brokeInfoEntity.address != null">
         and address like "%"#{brokeInfoEntity.address}"%"
       </if>
+      <if test="brokeInfoEntity.type != null">
+        and type = #{brokeInfoEntity.type}
+      </if>
       <if test="brokeInfoEntity.cardNumber != null">
         and cardNumber like "%"#{brokeInfoEntity.cardNumber}"%"
       </if>
