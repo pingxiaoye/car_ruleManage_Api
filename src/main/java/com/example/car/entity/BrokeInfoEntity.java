@@ -99,6 +99,26 @@ public class BrokeInfoEntity implements Serializable {
 
     private String endDate;
 
+    private String handle;
+
+    private UserEntity userEntity;
+
+    public UserEntity getUserEntity() {
+        return userEntity;
+    }
+
+    public void setUserEntity(UserEntity userEntity) {
+        this.userEntity = userEntity;
+    }
+
+    public String getHandle() {
+        return handle;
+    }
+
+    public void setHandle(String handle) {
+        this.handle = handle;
+    }
+
     public String getStartDate() {
         return startDate;
     }

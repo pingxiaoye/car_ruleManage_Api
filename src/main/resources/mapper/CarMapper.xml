@@ -215,6 +215,9 @@
     select * from repairInfo where carId = #{carId}
     <include refid="limit"/>
   </select>
+  <select id="getByCardNumber" resultType="com.example.car.entity.CarEntity">
+    select * from car where cardNumber = #{cardNumber}
+  </select>
 
 
   <insert id="insertImg">

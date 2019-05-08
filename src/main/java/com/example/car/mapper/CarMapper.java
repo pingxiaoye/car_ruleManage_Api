@@ -71,4 +71,7 @@ public interface CarMapper {
     List<RepairInfo> getRepairInfoList(@Param("pageObject")PageObject pageObject,@Param("carId")Integer carId);
 
     int insertImg(@Param("imgList")List<String> imgList,@Param("carId") Integer carId);
+
+    CarEntity getByCardNumber(String cardNumber);
+
 }

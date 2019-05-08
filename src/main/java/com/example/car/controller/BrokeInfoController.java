@@ -4,8 +4,10 @@ import com.example.car.common.JsonResult;
 import com.example.car.common.PageResult;
 import com.example.car.common.ServiceException;
 import com.example.car.entity.BrokeInfoEntity;
+import com.example.car.entity.CarEntity;
 import com.example.car.entity.UserEntity;
 import com.example.car.mapper.BrokeInfoMapper;
+import com.example.car.mapper.CarMapper;
 import com.example.car.mapper.UserMapper;
 import com.example.car.service.BrokeInfoServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,28 +30,25 @@ public class BrokeInfoController {
     private BrokeInfoMapper brokeInfoMapper;
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private CarMapper carMapper;
 
     @RequestMapping("/add")
     @Transactional
     public JsonResult add(@RequestBody BrokeInfoEntity brokeInfoEntity){
-        try {
-            if (brokeInfoEntity.getUserId()!=null){
-                //减积分
-                Integer userId = brokeInfoEntity.getUserId();
-                UserEntity userEntity = userMapper.selectByPrimaryKey(userId);
-                userEntity.setPoints(userEntity.getPoints()-brokeInfoEntity.getPoints());
-                userMapper.updateByPrimaryKeySelective(userEntity);
+            CarEntity carEntity = carMapper.getByCardNumber(brokeInfoEntity.getCardNumber());
+            if (carEntity==null){
+                throw new ServiceException("当前车牌号不存在！");
             }
+            brokeInfoEntity.setUserId(carEntity.getUserId());
+            brokeInfoEntity.setHandle("未处理");
             //插入违章记录
             brokeInfoMapper.insert(brokeInfoEntity);
             Integer bId = brokeInfoEntity.getId();
             if (brokeInfoEntity.getImgList()!=null){
                 brokeInfoMapper.insertImg(brokeInfoEntity.getImgList(),bId);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ServiceException("添加失败");
-        }
+
         return new JsonResult();
     }
 
@@ -90,7 +89,7 @@ public class BrokeInfoController {
     @RequestMapping("/handle")
     public JsonResult handle(@NotNull Integer userId, @NotNull Integer brokeInfoId){
         BrokeInfoEntity brokeInfoEntity = brokeInfoMapper.selectByPrimaryKey(brokeInfoId);
-        if(brokeInfoEntity.getUserId()!=null){
+        if(brokeInfoEntity.getHandle().equals("已处理")){
             throw new ServiceException("当前违章已处理!不可重复处理!");
         }
         try {
@@ -98,7 +97,7 @@ public class BrokeInfoController {
 
             userEntity.setPoints(userEntity.getPoints()-brokeInfoEntity.getPoints());
             userMapper.updateByPrimaryKeySelective(userEntity);
-
+            brokeInfoEntity.setHandle("已处理");
             brokeInfoEntity.setUserId(userId);
             brokeInfoMapper.updateByPrimaryKeySelective(brokeInfoEntity);
         } catch (Exception e) {
